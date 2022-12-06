@@ -18,28 +18,6 @@ import uniswap_price_feed as uni
 
 load_dotenv()
 
-"""
-1. Need to calculate the block_timestamp from the block_number in the dataset 
-    --> can use web3.py to get the block_timestamp but maybe multicall would be able to do it faster?
-
---> https://dev.to/narasimha1997/lets-build-a-simple-asynchronous-web3-client-for-ethereum-blockchain-in-python-45dh
-
-- without any concurrency or batching it takes aroun 6 minutes to run 
-
-2. Need to use async then to pull the price of eth from coingecko' API (why did they not decide to go with etherscan for this?)
-
-3. Create a data table with added columns for block_timestamp, gas cost of each transaction in Gwei (1e-9 ETH) (gas_price / 1e9)
-
-, $$ cost of gas used
-
-4. Export this new dataframe to a sqlite database 
-
-https://stackoverflow.com/questions/2887878/importing-a-csv-file-into-a-sqlite3-database-table-using-python
-
-to get out of sqlite command line sqlite> press control D
-"""
-
-
 async def get_timestamps(
     session: aiohttp.ClientSession, 
     block_number: int 
@@ -94,8 +72,7 @@ async def get_prices_usd(
     async with session.get(url) as response:
         if response.status == 200:
             results = await response.json()
-            # print(results)
-        
+            
             return results
 
 async def gather_prices(
@@ -113,23 +90,6 @@ async def gather_prices(
         
         data = await asyncio.gather(*tasks)     
         return data
-
-def get_uniswap_data(_w3, block_numbers):
-
-    """
-        1. Need to pull all every time a usdc-eth swap occurs on Uni v2 : https://etherscan.io/tx/0x3d4cee789876f4e5540e5b64b3bd9a6d74e89d3a256cd035a98485b63502bae7
-         -- between the blocks passed in from block_numbers
-        2. Group by a minute by minute basis 
-        3. Make sure that if there is gaps in the data pull from the previous row 
-        4. Find the average( ratio of ETH / USDC ) for the swaps to compute the eth price in usd
-    
-        -- maybe could use multicall with this??
-    """
-    func = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822'
-
-    filter_params = {
-        "topic0": func
-    }
 
 def drop_db_table():
     
@@ -195,7 +155,7 @@ if __name__ == "__main__":
     print(final_data)
     final_data.to_csv('final_data.csv')
     # drop_db_table()
-    export_to_db('final_data.csv') #ONLY RUN IF YOU NEED TO UPDATE THE DB
+    #export_to_db('final_data.csv') #ONLY RUN IF YOU NEED TO UPDATE THE DB
 
 
 
