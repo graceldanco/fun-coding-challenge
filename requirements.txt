@@ -1,0 +1,15 @@
+web3
+python-dotenv
+jsonlib
+pandas
+asyncio
+db-sqlite3
+pytest
+DateTime
+python-time
+pycoingecko
+aiohttp
+requests
+python-csv
+fastapi 
+pydantic
